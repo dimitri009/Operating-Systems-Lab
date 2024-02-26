@@ -16,20 +16,20 @@ public class Main {
         int K=20;
         int T1=100;
         int T2=50;
-        ResourceManager rm = new ResourceManager(20, 20);//anche qui nella fretta ho sbagliato la dichiarazione nello scritto
+        ResourceManager rm = new ResourceManager(20, 20);
         RichiesteQueue rq = new RichiesteQueue(K);
         
         ClientThread[] ct = new ClientThread[5];
         for (int i=0;i<ct.length;i++){
             ct[i]=new ClientThread(rq);
-            ct[i].setName("Client "+i);//nella fretta nello scritto ho invertito la riga 48 con la 49, invece di nominare il thread "C" come nello scritto l'ho chiamato "Client" qui
+            ct[i].setName("Client "+i);
             ct[i].start();
         }
         
         WorkerThread[] wt = new WorkerThread[3];
         for(int i=0;i<wt.length;i++){
             wt[i]= new WorkerThread(rq, T1, T2, rm);
-            wt[i].setName("Worker "+i);// ho nominato anche i thread worker
+            wt[i].setName("Worker "+i);
             wt[i].start();
         }
         
@@ -46,7 +46,7 @@ public class Main {
         for (ClientThread ct1 : ct) {
             System.out.println(ct1.getName() + " tempo minimo :" + ct1.min + ", tempo massimo:" + ct1.max + " tempo medio:" + (ct1.avg / ct1.count));
         }
-        System.out.println("ra:"+rm);//ho fatto una chiamata al metodo toString quello che avevo mal fatto nello scritto
+        System.out.println("ra:"+rm);
     }
     
 }
@@ -97,7 +97,7 @@ class ResourceManager {
     }
 }
 class Richiesta {
-     float value;  // nello scritto avevo dichiarato le variabili privati ma ho cambiato in public qui
+     float value;
      boolean set = false;
 
     public Richiesta(float value) {
@@ -110,8 +110,8 @@ class RichiesteQueue {
     private int K;
     private Semaphore mutex = new Semaphore(1);
     private Semaphore pieni = new Semaphore(0);
-    private Semaphore vuote; //ho aggiunto il semaforo vuote che non c'era nel mio scritto
-    private Semaphore set = new Semaphore(1); // ho aggiunto questo semaforo per l'attesa tra thread
+    private Semaphore vuote;
+    private Semaphore set = new Semaphore(1);
 
     public RichiesteQueue(int K) {
         this.K = K;
@@ -127,7 +127,7 @@ class RichiesteQueue {
         pieni.release();
     }
     
-    public void waitRisp () throws InterruptedException{ // metodo per l'attesa tra thread
+    public void waitRisp () throws InterruptedException{ 
         set.acquire();
         set.release();
         
@@ -136,7 +136,7 @@ class RichiesteQueue {
         pieni.acquire();
         mutex.acquire();
         float v = queue.get(0).value;
-        queue.get(0).value= v*2; // ho modificato la variabile direttamente nel metodo
+        queue.get(0).value= v*2; 
         queue.get(0).set=true;
         queue.remove(0);
         mutex.release();
@@ -147,9 +147,9 @@ class RichiesteQueue {
 
 class ClientThread extends Thread{
     private RichiesteQueue rq;
-    long min = Long.MAX_VALUE;// ho aggiunto dei variabili in più per il calcolo dei tempi minimi, 
-    long max = Long.MIN_VALUE;//massimi 
-    long avg; // medi
+    long min = Long.MAX_VALUE;
+    long max = Long.MIN_VALUE; 
+    long avg;
     int count; 
 
     public ClientThread(RichiesteQueue rq) {
@@ -161,9 +161,9 @@ class ClientThread extends Thread{
             while(true){
                 float random = (float)(Math.random()*99);
                 Richiesta r= new Richiesta(random);
-                long t1 = System.currentTimeMillis();// questo non l'avevo dichiarato nello scritto 
+                long t1 = System.currentTimeMillis();
                 rq.getRichieste(r);
-                rq.waitRisp(); // ho aggiunto questo metodo per l'attesa passiva tra thread
+                rq.waitRisp();
                 long t2 = System.currentTimeMillis();
                 long tempo = t2-t1;
                 if (min>tempo)
@@ -173,7 +173,7 @@ class ClientThread extends Thread{
                 avg+=tempo;
                 count++;
                 System.out.println(getName()+" valore inviato :"+random+", valore ricevuto :"+r.value+", Took : " + ((tempo) /*/ 1000*/+" millisecondi."));
-                //qui ho usato r.value e r.set diversamente del mio compito scritto dove era sbagliato scrivere rq.get(0).value e rq.get(0).set
+                
             }
         }catch (InterruptedException e){
             System.out.println(getName()+" Interrotto !");
@@ -201,8 +201,8 @@ class WorkerThread extends Thread {
                rm.acquireA();
                rm.acquireB();
                rq.setRichiesta();
-               try{sleep(T1);  // qui ho aggiunto dei metodi try e finally per il rilascio forzato
-                   sleep(T2);  // delle risorse che ho omesso nello scritto                
+               try{sleep(T1);  
+                   sleep(T2);                
                }finally{
                    rm.releaseA();
                    rm.releaseB();}
